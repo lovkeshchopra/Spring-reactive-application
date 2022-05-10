@@ -2,11 +2,11 @@ package com.reactive.webflux.restcontroller;
 
 import java.util.List;
 
+import com.reactive.webflux.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
 
 import com.reactive.webflux.dto.Address;
 import com.reactive.webflux.dto.ResponseDTO;
@@ -24,11 +24,26 @@ public class UserController {
 	@Autowired
 	private UserService userService;
 
+	@PostMapping
+	@ResponseStatus(code = HttpStatus.CREATED)
+	public Mono<User> save(@RequestBody User user) {
+		return userService.save(user);
+	}
+
 	@GetMapping("/getAllUsers")
-	public Flux<UserDTO> getAllUsers() {
+	public Flux<UserDTO> getAllUsersWithWebClient() {
+		return userService.getAllUsersWithWebClient();
 
-		return userService.getAllUsers().log();
+	}
 
+	@GetMapping(value = "/allUsers")
+	public List<User> getAllUser() throws InterruptedException {
+		return userService.findAll();
+	}
+
+	@GetMapping(value = "/allUsers/stream",produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+	public Flux<User> getAllUserStream() {
+		return userService.getAllUserStream();
 	}
 
 	@GetMapping("/getAddress")

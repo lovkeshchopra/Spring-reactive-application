@@ -7,12 +7,13 @@ import com.reactive.webflux.dto.ResponseDTO;
 import com.reactive.webflux.dto.ResponseData;
 import com.reactive.webflux.dto.UserDTO;
 
+import com.reactive.webflux.entity.User;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 public interface UserService {
 
-	public Flux<UserDTO> getAllUsers();
+	public Flux<UserDTO> getAllUsersWithWebClient();
 
 	public Flux<Address> getUsersAddress();
 
@@ -30,4 +31,9 @@ public interface UserService {
 
 	public Flux<UserDTO> doOnOperations();
 
+	Mono<User> save(User user);
+
+	List<User> findAll() throws InterruptedException;
+
+    Flux<User> getAllUserStream();
 }

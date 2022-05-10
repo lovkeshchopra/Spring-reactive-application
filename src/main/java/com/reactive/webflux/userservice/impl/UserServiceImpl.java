@@ -1,7 +1,10 @@
 package com.reactive.webflux.userservice.impl;
 
 import java.util.List;
+import java.util.stream.IntStream;
 
+import com.reactive.webflux.entity.User;
+import com.reactive.webflux.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -23,12 +26,14 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	private WebClient webClient;
 
+	@Autowired
+	private UserRepository userRepository;
+
 	@Override
-	public Flux<UserDTO> getAllUsers() {
+	public Flux<UserDTO> getAllUsersWithWebClient() {
 
 		Flux<UserDTO> response = webClient.get().uri("/users").retrieve().bodyToFlux(UserDTO.class);
-		return response.doOnNext(s -> System.out.println("Value: " + s))
-				.filter(res -> res.getUsername().startsWith("B"));
+		return response;
 
 	}
 
@@ -111,5 +116,39 @@ public class UserServiceImpl implements UserService {
 
 		return userResponse.doOnSubscribe(subscription -> System.out.println(subscription.toString()));
 	}
+
+	@Override
+	public Mono<User> save(User user) {
+		  userRepository.save(user).subscribe();
+		  return null;
+
+	}
+
+	private static void sleepExecution(int i ) throws InterruptedException {
+		Thread.sleep(1000);
+	}
+
+
+
+
+	@Override
+	public List<User> findAll() {
+		long start = System.currentTimeMillis();
+//		List<User> customers = userRepository.findAll();
+		long end = System.currentTimeMillis();
+		System.out.println("Total execution time : " + (end - start));
+		return null;
+	}
+
+
+	@Override
+	public Flux<User> getAllUserStream() {
+		long start = System.currentTimeMillis();
+		Flux<User> customers = userRepository.findAll();
+		long end = System.currentTimeMillis();
+		System.out.println("Total execution time : " + (end - start));
+		return customers;
+	}
+
 
 }
